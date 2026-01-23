@@ -3,6 +3,8 @@ from textblob import TextBlob
 
 from data.url_scraper import extract_text_from_url, is_valid_url_text
 from trust_score_engine import calculate_trust_score
+from source_reliability import get_source_reliability
+
 
 model = joblib.load("fake_news_model.pkl")
 vectorizer = joblib.load("tfidf_vectorizer.pkl")
@@ -29,7 +31,7 @@ def analyze_url(url):
     trust_score = calculate_trust_score(
         model_confidence=confidence,
         sentiment_score=sentiment_score,
-        source_score=0.9  # URLs assumed higher reliability
+        source_score = get_source_reliability(url) # URLs assumed higher reliability
     )
 
     return {
