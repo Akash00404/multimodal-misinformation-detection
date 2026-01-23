@@ -4,9 +4,7 @@ from data.ocr_engine import extract_text_from_image, is_valid_ocr_text
 from trust_score_engine import calculate_trust_score
 from multimodal_consistency_check import check_multimodal_consistency
 from textblob import TextBlob
-
-
-
+from bert_module.bert_pipeline import bert_predict
 # Load trained ML components
 model = joblib.load("fake_news_model.pkl")
 vectorizer = joblib.load("tfidf_vectorizer.pkl")
@@ -31,6 +29,9 @@ def analyze_image(image_path, caption_text=None):
     confidence = max(model.predict_proba(vector)[0])
 
     label = "Fake" if prediction == 0 else "Real"
+    # BERT-based prediction (semantic)
+    bert_result = bert_predict(ocr_text)
+
     # Step 4: Trust Score
     # Calculate sentiment polarity
     sentiment_score = TextBlob(ocr_text).sentiment.polarity
@@ -52,12 +53,15 @@ def analyze_image(image_path, caption_text=None):
         }
 
     return {
-        "ocr_text": ocr_text,
-        "prediction": label,
-        "confidence_percent": round(confidence * 100, 2),
-        "trust_score_percent": trust_score,
-        "consistency": consistency_result
-    }
+    "ocr_text": ocr_text,
+    "tfidf_prediction": label,
+    "tfidf_confidence_percent": round(confidence * 100, 2),
+    "bert_prediction": bert_result["prediction"],
+    "bert_confidence_percent": bert_result["confidence_percent"],
+    "trust_score_percent": trust_score,
+    "consistency": consistency_result
+}
+
 
 if __name__ == "__main__":
     image_path = "test_images/test1.png"
