@@ -7,3 +7,10 @@ __pycache__/
 
 
 
+# BERT trained models & checkpoints
+bert_module/bert_fake_news_model/
+bert_module/bert_results/
+
+# Python cache
+__pycache__/
+*.pyc
